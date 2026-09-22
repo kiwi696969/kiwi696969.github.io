@@ -1,0 +1,284 @@
+/* ==========================================================================
+   云间小筑 · 粉色山脉毛玻璃主题
+   基于 Fluid 主题的视觉定制层
+   由 WorkBuddy 生成 · 2026-09-22
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. 粉色系配色
+   覆盖主题的 CSS 变量（:root），下面所有模块都会跟着变色
+   -------------------------------------------------------------------------- */
+:root {
+  /* 兜底底色：背景图加载前先铺一层浅粉，避免闪白 */
+  --body-bg-color: #f7e7ee;
+
+  /* 卡片底色：半透明白，是「透明模块」的核心 */
+  --board-bg-color: rgba(255, 253, 254, 0.44);
+
+  /* 字体 */
+  --text-color: #4a3540;
+  --sec-text-color: #8b6b79;
+  --post-text-color: #442f3a;
+  --post-heading-color: #5d3346;
+  --post-link-color: #c25b85;
+
+  --link-hover-color: #e2699b;
+  --link-hover-bg-color: rgba(255, 255, 255, 0.5);
+
+  /* 分隔线、表格边线 */
+  --line-color: rgba(196, 140, 165, 0.35);
+
+  /* 导航栏 */
+  --navbar-bg-color: rgba(255, 250, 252, 0.45);
+  /* 实测：在粉色天空上 #5d3346 对比度 5.34，白色只有 1.94，所以用深紫红 */
+  --navbar-text-color: #5d3346;
+  --subtitle-color: #5d3346;
+
+  /* 滚动条 */
+  --scrollbar-color: #e6aec4;
+  --scrollbar-hover-color: #d189a5;
+
+  /* 按钮 */
+  --button-bg-color: transparent;
+  --button-hover-bg-color: rgba(255, 255, 255, 0.55);
+}
+
+
+/* --------------------------------------------------------------------------
+   2. 全屏粉色山脉背景
+   用 fixed 定位的伪元素实现，比 background-attachment: fixed 更稳
+   （iOS Safari 对后者支持很差）
+   -------------------------------------------------------------------------- */
+html {
+  background-color: #f7e7ee;
+}
+
+body {
+  /* 让位给下面的伪元素，否则 body 自己的底色会把它盖住 */
+  background-color: transparent !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background: url("/img/bg.jpg") center center / cover no-repeat;
+}
+
+/* 头图不再自带图片：让它完全透明，直接透出上面那张全局背景
+   这样头图和页面主体是同一张图，滚动时严丝合缝，不会出现断层 */
+#banner {
+  background: none !important;
+}
+
+/* 去掉头图上的黑色蒙版，让粉色天空直接露出来 */
+#banner .mask {
+  background-color: transparent !important;
+}
+
+/* 头图文字：深紫红 + 柔和白色光晕
+   实测白字在粉色天空上对比度仅 1.5，深紫红可达 6.9，可读性优先 */
+.banner-text,
+#subtitle,
+.typed-cursor {
+  color: #5d3346;
+  text-shadow: 0 2px 14px rgba(255, 255, 255, 0.7),
+               0 1px 2px rgba(255, 255, 255, 0.55);
+}
+
+
+/* --------------------------------------------------------------------------
+   3. 毛玻璃卡片（主内容面板）
+   -------------------------------------------------------------------------- */
+#board {
+  background-color: var(--board-bg-color) !important;
+  -webkit-backdrop-filter: saturate(160%) blur(16px);
+  backdrop-filter: saturate(160%) blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px rgba(150, 80, 115, 0.16);
+}
+
+/* 窄屏时卡片贴边，收一点内边距 */
+@media (max-width: 767px) {
+  #board {
+    border-radius: 0.75rem;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   4. 毛玻璃导航栏
+   只在页面向下滚动后才出现底色，顶部时是透明的
+   -------------------------------------------------------------------------- */
+.navbar-col-show,
+.top-nav-collapse,
+.navbar .dropdown-collapse,
+#mobile-grid-menu {
+  background-color: var(--navbar-bg-color) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+  box-shadow: 0 2px 18px rgba(160, 90, 125, 0.14);
+}
+
+/* 导航栏文字：默认是白色（bootstrap 的 navbar-dark），改成玫褐色 */
+#navbar .navbar-brand,
+#navbar .nav-link,
+#navbar .navbar-brand strong {
+  color: var(--navbar-text-color) !important;
+}
+
+#navbar .nav-link:hover,
+#navbar .navbar-brand:hover {
+  color: #c25b85 !important;
+  opacity: 1;
+}
+
+/* 移动端汉堡菜单图标 */
+#navbar-toggler-btn .animated-icon span,
+#navbar-toggler-btn .animated-icon span::before,
+#navbar-toggler-btn .animated-icon span::after {
+  background-color: var(--navbar-text-color);
+}
+
+
+/* --------------------------------------------------------------------------
+   5. 文章目录（TOC）毛玻璃
+   -------------------------------------------------------------------------- */
+#toc {
+  background-color: rgba(255, 253, 254, 0.42) !important;
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  backdrop-filter: saturate(160%) blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 1rem;
+  box-shadow: 0 6px 24px rgba(150, 80, 115, 0.12);
+}
+
+
+/* --------------------------------------------------------------------------
+   6. 搜索弹窗
+   -------------------------------------------------------------------------- */
+#modalSearch .modal-content {
+  background-color: rgba(255, 253, 254, 0.75) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+  backdrop-filter: saturate(180%) blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 1rem;
+}
+
+#modalSearch .modal-header,
+#modalSearch .modal-footer {
+  border-color: rgba(196, 140, 165, 0.3) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   7. 回到顶部按钮
+   -------------------------------------------------------------------------- */
+#scroll-top-button {
+  background-color: rgba(255, 253, 254, 0.5) !important;
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  backdrop-filter: saturate(160%) blur(12px);
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(160, 90, 125, 0.22);
+}
+
+
+/* --------------------------------------------------------------------------
+   8. 页脚
+   背景图是 fixed 的，滚动位置不同、页脚背后的颜色也不同（顶部浅粉、底部深紫红），
+   所以给页脚铺一条毛玻璃底衬，保证任何滚动位置下文字都清楚
+   -------------------------------------------------------------------------- */
+.footer-inner {
+  margin-top: 2.5rem;
+  padding: 2rem 1rem 1.2rem;
+  background-color: rgba(255, 253, 254, 0.42);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  backdrop-filter: saturate(160%) blur(14px);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  color: #6b4356;
+}
+
+.footer-inner a {
+  color: #b0507a !important;
+}
+
+.footer-inner a:hover {
+  color: #d1699a !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   9. 正文细节：引用块、表格、图片、代码块
+   -------------------------------------------------------------------------- */
+.markdown-body blockquote {
+  color: #6b4c59;
+  background-color: rgba(255, 255, 255, 0.38);
+  border-left-color: #eab7cb;
+  border-radius: 0 0.6rem 0.6rem 0;
+}
+
+.markdown-body table tr {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.markdown-body table th {
+  background-color: rgba(246, 200, 218, 0.5);
+}
+
+.markdown-body img {
+  border-radius: 0.6rem;
+  box-shadow: 0 6px 22px rgba(150, 80, 115, 0.16);
+}
+
+.markdown-body pre,
+.markdown-body .highlight {
+  border-radius: 0.6rem;
+}
+
+.markdown-body code {
+  border-radius: 0.3rem;
+}
+
+/* 文章底部的「上一篇 / 下一篇」 */
+.post-prevnext a {
+  border-radius: 0.6rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. 分页器与滚动条
+   -------------------------------------------------------------------------- */
+.pagination .page-number,
+.pagination .extend,
+.pagination .space {
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #e6aec4;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #d189a5;
+}
