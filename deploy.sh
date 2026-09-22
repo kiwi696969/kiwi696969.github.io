@@ -14,19 +14,34 @@ cd "$(dirname "$0")"
 
 MSG="${1:-更新博客: $(date '+%Y-%m-%d %H:%M:%S')}"
 
-echo "===== 1/4 本地构建自检 ====="
+echo "===== 1/5 源文件体检 ====="
+# 编辑器（尤其 MarkText）偶尔会吃掉 front matter 字段，
+# 缺 date 会让文章日期在云端构建时漂移，缺 tags/categories 会让分类标签页消失
+if ! bash check_frontmatter.sh; then
+  echo
+  echo "⚠️  上面这些文件字段不全，这样发布会带着问题上线。"
+  if [ -t 0 ]; then
+    echo "    补好字段后按回车继续；想中止就按 Ctrl+C。"
+    read -r _
+  else
+    echo "    （非交互运行，已自动继续）"
+  fi
+fi
+echo
+
+echo "===== 2/5 本地构建自检 ====="
 # 先在本机编译一遍，有问题当场暴露，不用等 Actions 白跑一趟
 hexo clean
 hexo g
 
-echo "===== 2/4 检查源文件改动 ====="
+echo "===== 3/5 检查源文件改动 ====="
 git status --short
 
-echo "===== 3/4 提交 ====="
+echo "===== 4/5 提交 ====="
 git add -A
 git commit -m "$MSG" || echo "  没有变更需要提交"
 
-echo "===== 4/4 推送到 GitHub ====="
+echo "===== 5/5 推送到 GitHub ====="
 git push origin main
 
 echo
