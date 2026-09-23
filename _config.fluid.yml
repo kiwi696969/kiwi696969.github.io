@@ -93,14 +93,15 @@ fun_features:
     # Cursor character
     cursorChar: "_"
 
-    # 是否循环播放效果
+    # 是否循环播放效果：打字完成后自动重播，形成持续的动画
     # If true, loop animation
-    loop: false
+    loop: true
 
     # 在指定页面开启，不填则在所有页面开启
     # Enable in specified page, all pages by default
     # Options: home | post | tag | category | about | links | page | 404
-    scope: []
+    # 只放在首页：否则每篇文章的标题也会被无限重打，反而干扰阅读
+    scope: [home]
 
   # 为文章内容中的标题添加锚图标
   # Add an anchor icon to the title on the post page
@@ -512,6 +513,10 @@ index:
   # Available: 0 - 1.0
   banner_mask_alpha: 0
 
+  # 首页头图上方的圆形头像（留空则不显示）
+  # Round avatar above the banner text on the home page. Leave empty to hide
+  avatar_img: /img/avatar.jpg
+
   # 首页副标题的独立设置
   # Independent config of home page subtitle
   slogan:
@@ -519,7 +524,7 @@ index:
 
     # 为空则按 hexo config.subtitle 显示，支持列表格式来实现随机选择一行文字显示
     # If empty, text based on `subtitle` in hexo config, support list format to random selection of a row for display
-    text: "记录一些碎碎念"
+    text: "Welcome to Kiwi Blog"
 
     # 通过 API 接口作为首页副标题的内容，必须返回的是 JSON 格式，如果请求失败则按 text 字段显示，该功能必须先开启 typing 打字机功能
     # Subtitle of the homepage through the API, must be returned a JSON. If the request fails, it will be displayed in `text` value. This feature must first enable the typing animation

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   云间小筑 · 粉色山脉毛玻璃主题
+   Kiwi Blog · 粉色山脉毛玻璃主题
    基于 Fluid 主题的视觉定制层
    由 WorkBuddy 生成 · 2026-09-22
    ========================================================================== */
@@ -281,4 +281,91 @@ body::before {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #d189a5;
+}
+
+
+/* --------------------------------------------------------------------------
+   11. 首页头图：圆形头像 + 副标题动画
+   -------------------------------------------------------------------------- */
+
+/* 头像：悬浮呼吸 + 光晕，hover 时放大并抬起来 */
+.banner-avatar {
+  display: inline-block;
+  width: 128px;
+  height: 128px;
+  margin-bottom: 1.2rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 10px 30px rgba(120, 60, 90, 0.28),
+              0 0 0 6px rgba(255, 255, 255, 0.22);
+  /* 只让位移动起来：入场淡入交给父级 .banner-text 的 fade-in-up，
+     避免两条动画抢同一个 transform 属性 */
+  animation: avatar-float 4s ease-in-out infinite;
+  transition: box-shadow 0.35s ease;
+  will-change: transform;
+}
+
+.banner-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.banner-avatar:hover {
+  box-shadow: 0 16px 40px rgba(120, 60, 90, 0.38),
+              0 0 0 6px rgba(255, 255, 255, 0.34);
+}
+
+/* 放大写在 img 上，这样不会和 .banner-avatar 的浮动动画冲突 */
+.banner-avatar:hover img {
+  transform: scale(1.07);
+}
+
+@keyframes avatar-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+/* 副标题：打字机之外再叠一层柔和的光晕呼吸 */
+#subtitle {
+  color: var(--subtitle-color);
+  animation: subtitle-glow 3.4s ease-in-out infinite;
+}
+
+@keyframes subtitle-glow {
+  0%,
+  100% {
+    text-shadow: 0 2px 12px rgba(255, 255, 255, 0.55);
+  }
+
+  50% {
+    text-shadow: 0 2px 22px rgba(255, 255, 255, 0.95),
+                 0 0 26px rgba(226, 105, 155, 0.35);
+  }
+}
+
+/* 尊重系统的「减弱动态效果」设置 */
+@media (prefers-reduced-motion: reduce) {
+  .banner-avatar,
+  #subtitle {
+    animation: none !important;
+  }
+}
+
+/* 移动端头像小一点，避免挤掉标题 */
+@media (max-width: 767px) {
+  .banner-avatar {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 0.9rem;
+  }
 }

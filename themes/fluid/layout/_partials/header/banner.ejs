@@ -31,6 +31,12 @@ var subtitle = page.subtitle || page.title
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, <%= banner_mask_alpha %>)">
       <div class="banner-text text-center fade-in-up">
+        <% if (is_home() && theme.index.avatar_img) { %>
+          <a href="<%- url_for('/about/') %>" class="banner-avatar" title="关于我">
+            <img src="<%- url_for(theme.index.avatar_img) %>" alt="avatar">
+          </a>
+        <% } %>
+
         <div class="h2">
           <% if(theme.fun_features.typing.enable && in_scope(theme.fun_features.typing.scope)) { %>
             <span id="subtitle" data-typed-text="<%= subtitle %>"></span>
