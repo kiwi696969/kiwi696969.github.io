@@ -8,7 +8,7 @@ var colorSchema = theme.dark_mode && theme.dark_mode.enable && theme.dark_mode.d
 
 <%- partial('_partials/head.ejs') %>
 
-<body>
+<body class="<%= is_home() ? 'page-home' : '' %>">
   <%- inject_point('bodyBegin') %>
 
   <header>

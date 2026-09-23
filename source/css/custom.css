@@ -369,3 +369,97 @@ body::before {
     margin-bottom: 0.9rem;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   12. 首页文章列表：每篇一块独立毛玻璃 + 封面图
+   样式只作用于首页（body.page-home），文章页、归档页不受影响
+   -------------------------------------------------------------------------- */
+
+/* 首页的那整块面板改为全透明，把「玻璃」让给每一篇文章。
+   否则两层半透明叠加会发灰发浑，背景的粉色山脉也被糊住看不出来 */
+.page-home #board {
+  background-color: transparent !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+}
+
+/* 每篇文章 = 一块独立毛玻璃分块 */
+.page-home .index-card {
+  /* 抵消 bootstrap row 的负边距，让玻璃块与内容区对齐、不溢出 */
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-bottom: 1.6rem;
+  padding: 1rem 0.25rem 0.75rem;
+  background-color: rgba(255, 253, 254, 0.5);
+  -webkit-backdrop-filter: saturate(165%) blur(16px);
+  backdrop-filter: saturate(165%) blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 1.1rem;
+  box-shadow: 0 10px 32px rgba(150, 80, 115, 0.15);
+  transition: transform 0.32s ease, box-shadow 0.32s ease,
+              background-color 0.32s ease, border-color 0.32s ease;
+}
+
+/* 悬停：整块轻轻浮起，玻璃更透亮 */
+.page-home .index-card:hover {
+  transform: translateY(-4px);
+  background-color: rgba(255, 255, 255, 0.64);
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 20px 44px rgba(150, 80, 115, 0.26);
+}
+
+/* 封面图：圆角 + 悬停微放大。
+   不设 overflow: hidden，让图片的外阴影能透出来；
+   列的 15px 内边距足够接住放大的那一点溢出，不会压到文字 */
+.page-home .index-img img {
+  border-radius: 0.85rem;
+  box-shadow: 0 8px 22px rgba(150, 80, 115, 0.22);
+  transition: transform 0.45s ease, box-shadow 0.45s ease;
+}
+
+.page-home .index-card:hover .index-img img {
+  transform: scale(1.04);
+  box-shadow: 0 14px 32px rgba(150, 80, 115, 0.3);
+}
+
+/* 标题在悬停时染成玫粉色，强化「可点」的暗示 */
+.page-home .index-card:hover .index-header a {
+  color: var(--post-link-color);
+}
+
+/* 首页面板透明后，分页器直接浮在背景上，给它一层轻玻璃保证可读 */
+.page-home .pagination .page-number,
+.page-home .pagination .extend {
+  background-color: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+  backdrop-filter: saturate(160%) blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* 移动端：留白收紧，玻璃块圆角略小 */
+@media (max-width: 767px) {
+  .page-home .index-card {
+    padding: 0.85rem 0.15rem 0.6rem;
+    border-radius: 0.9rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* 尊重系统的「减弱动态效果」设置 */
+@media (prefers-reduced-motion: reduce) {
+  .page-home .index-card,
+  .page-home .index-img img {
+    transition: none;
+  }
+
+  .page-home .index-card:hover {
+    transform: none;
+  }
+
+  .page-home .index-card:hover .index-img img {
+    transform: none;
+  }
+}

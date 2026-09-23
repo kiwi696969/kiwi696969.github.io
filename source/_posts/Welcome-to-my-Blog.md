@@ -1,6 +1,7 @@
 ---
 title: Welcome to my Blog
 date: 2026-09-22 19:37:00
+index_img: /img/covers/welcome.jpg
 categories: [博客, 公告]
 tags: [Hexo, 开篇, 欢迎]
 ---
