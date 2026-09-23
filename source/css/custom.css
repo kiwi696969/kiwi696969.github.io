@@ -463,3 +463,72 @@ body::before {
     transform: none;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   13. 首页头图上的快捷按钮（GitHub 主页入口）
+   只在首页渲染，见 banner.ejs
+   -------------------------------------------------------------------------- */
+.banner-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+/* 毛玻璃胶囊按钮：与站点的玻璃质感统一 */
+.banner-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #5d3346 !important;
+  text-decoration: none !important;
+  background-color: rgba(255, 253, 254, 0.52);
+  -webkit-backdrop-filter: saturate(170%) blur(14px);
+  backdrop-filter: saturate(170%) blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 2rem;
+  box-shadow: 0 6px 20px rgba(150, 80, 115, 0.16);
+  transition: transform 0.28s ease, background-color 0.28s ease,
+              border-color 0.28s ease, box-shadow 0.28s ease, color 0.28s ease;
+}
+
+.banner-btn svg {
+  display: block;
+  flex: none;
+}
+
+/* 悬停：胶囊填成玫粉色、文字转白，作为明确的点击提示 */
+.banner-btn:hover {
+  transform: translateY(-3px);
+  color: #ffffff !important;
+  background-color: #c25b85;
+  border-color: #c25b85;
+  box-shadow: 0 12px 28px rgba(194, 91, 133, 0.42);
+}
+
+@media (max-width: 767px) {
+  .banner-links {
+    margin-top: 1.3rem;
+  }
+
+  .banner-btn {
+    padding: 0.45rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner-btn {
+    transition: none;
+  }
+
+  .banner-btn:hover {
+    transform: none;
+  }
+}
