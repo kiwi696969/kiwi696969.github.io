@@ -30,6 +30,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # 拉一遍最新仓库清单，重新生成 /repos/ 页面。
+      # 这一步失败也不影响构建（脚本内部会退回缓存并正常退出）
+      - name: Generate repos page
+        run: node tools/gen-repos.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build site
         run: npm run build
 

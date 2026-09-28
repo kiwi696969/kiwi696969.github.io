@@ -532,3 +532,190 @@ body::before {
     transform: none;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   14. 「我的仓库」页面（/repos/）
+   卡片由 tools/gen-repos.mjs 生成，构建前跑一次即可
+   注意：站内暗色模式是关掉的（dark_mode.enable: false），所以只写浅色一套
+   -------------------------------------------------------------------------- */
+.repo-wrap {
+  margin: 0;
+}
+
+/* 顶部统计行 */
+.repo-summary {
+  margin: 0 0 1.35rem;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--sec-text-color);
+}
+
+.repo-summary b {
+  color: var(--post-link-color);
+}
+
+.repo-summary a {
+  margin-left: 0.4rem;
+  white-space: nowrap;
+}
+
+/* 自适应网格：宽屏一行 3 个左右，窄屏自动并成一列 */
+.repo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.1rem;
+}
+
+/* 单张卡片：毛玻璃 + 悬停浮起。
+   这里比首页卡片实一点（0.6），因为外层 #board 本身已经是一层玻璃，
+   两层都太透会发灰、字也糊 */
+.repo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.1rem 1.2rem;
+  color: var(--post-text-color) !important;
+  text-decoration: none !important;
+  background-color: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  backdrop-filter: saturate(160%) blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 1.1rem;
+  box-shadow: 0 10px 28px rgba(150, 80, 115, 0.13);
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+              background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.repo-card:hover {
+  transform: translateY(-4px);
+  background-color: rgba(255, 255, 255, 0.78);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 42px rgba(150, 80, 115, 0.24);
+}
+
+/* 仓库名 + 角标 */
+.repo-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.repo-name {
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--post-heading-color);
+  word-break: break-word;
+  transition: color 0.3s ease;
+}
+
+.repo-card:hover .repo-name {
+  color: var(--post-link-color);
+}
+
+.repo-badge {
+  flex: none;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1.6;
+  color: var(--sec-text-color);
+  background-color: rgba(194, 91, 133, 0.1);
+  border: 1px solid rgba(194, 91, 133, 0.22);
+  border-radius: 1rem;
+}
+
+.repo-badge-self {
+  color: #ffffff;
+  background-color: #c25b85;
+  border-color: #c25b85;
+}
+
+/* 描述占满剩余高度，让底部信息栏对齐 */
+.repo-desc {
+  flex: 1;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--sec-text-color);
+}
+
+.repo-desc-empty {
+  opacity: 0.6;
+}
+
+/* 底部：语言 / Star / Fork / 更新时间 */
+.repo-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  font-size: 0.79rem;
+  color: var(--sec-text-color);
+}
+
+.repo-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* 语言色点。display:block 是必须的，行内元素设宽高不生效 */
+.repo-lang i {
+  display: block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.repo-stat {
+  white-space: nowrap;
+}
+
+.repo-updated {
+  margin-left: auto;
+}
+
+/* 话题标签 */
+.repo-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.repo-topic {
+  padding: 0.05rem 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1.7;
+  color: var(--post-link-color);
+  background-color: rgba(194, 91, 133, 0.08);
+  border-radius: 1rem;
+}
+
+@media (max-width: 767px) {
+  .repo-grid {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .repo-card {
+    padding: 0.95rem 1rem;
+  }
+
+  /* 窄屏放不下就把「更新于」换行，别把前面几项挤变形 */
+  .repo-updated {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .repo-card,
+  .repo-name {
+    transition: none;
+  }
+
+  .repo-card:hover {
+    transform: none;
+  }
+}

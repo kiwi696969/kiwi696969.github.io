@@ -8,6 +8,10 @@
 set -e
 cd "$(dirname "$0")"
 
+# 先刷新 /repos/ 页面，免得预览看到的是几天前的旧仓库列表
+env -u http_proxy -u https_proxy -u HTTP_PROXY -u HTTPS_PROXY \
+  node --use-system-ca tools/gen-repos.mjs || echo "（仓库页刷新失败，沿用现有内容）"
+
 hexo clean
 hexo g
 echo
