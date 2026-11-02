@@ -1,57 +1,69 @@
 /* ==========================================================================
-   Kiwi Blog · 粉色山脉毛玻璃主题
+   Kiwi Blog · 黑粉夜色主题（Angel Night）
    基于 Fluid 主题的视觉定制层
-   由 WorkBuddy 生成 · 2026-09-22
+   背景：粉发天使插画 + 眨眼动画
+   由 WorkBuddy 生成 · 2026-11-01
    ========================================================================== */
 
 
 /* --------------------------------------------------------------------------
-   1. 粉色系配色
-   覆盖主题的 CSS 变量（:root），下面所有模块都会跟着变色
+   1. 黑粉配色
+   覆盖主题的 CSS 变量，下面所有模块都会跟着变色
    -------------------------------------------------------------------------- */
 :root {
-  /* 兜底底色：背景图加载前先铺一层浅粉，避免闪白 */
-  --body-bg-color: #f7e7ee;
+  /* 兜底底色：背景图加载前先铺一层近黑，避免闪白 */
+  --body-bg-color: #0a0610;
 
-  /* 卡片底色：半透明白，是「透明模块」的核心 */
-  --board-bg-color: rgba(255, 253, 254, 0.44);
+  /* 卡片底色：半透明黑，是「黑玻璃」的核心 */
+  --board-bg-color: rgba(17, 10, 18, 0.9);
 
   /* 字体 */
-  --text-color: #4a3540;
-  --sec-text-color: #8b6b79;
-  --post-text-color: #442f3a;
-  --post-heading-color: #5d3346;
-  --post-link-color: #c25b85;
+  --text-color: #ece2ea;
+  --sec-text-color: #b09dab;
+  --post-text-color: #e3d7e0;
+  --post-heading-color: #ffd0e4;
+  --post-link-color: #ff86bd;
 
-  --link-hover-color: #e2699b;
-  --link-hover-bg-color: rgba(255, 255, 255, 0.5);
+  --link-hover-color: #ffb3d6;
+  --link-hover-bg-color: rgba(255, 111, 174, 0.14);
 
   /* 分隔线、表格边线 */
-  --line-color: rgba(196, 140, 165, 0.35);
+  --line-color: rgba(255, 143, 190, 0.22);
 
   /* 导航栏 */
-  --navbar-bg-color: rgba(255, 250, 252, 0.45);
-  /* 实测：在粉色天空上 #5d3346 对比度 5.34，白色只有 1.94，所以用深紫红 */
-  --navbar-text-color: #5d3346;
-  --subtitle-color: #5d3346;
+  --navbar-bg-color: rgba(10, 6, 12, 0.6);
+  --navbar-text-color: #f7dce9;
+  --subtitle-color: #ffe3f0;
 
   /* 滚动条 */
-  --scrollbar-color: #e6aec4;
-  --scrollbar-hover-color: #d189a5;
+  --scrollbar-color: #6b3a55;
+  --scrollbar-hover-color: #a8557f;
 
   /* 按钮 */
   --button-bg-color: transparent;
-  --button-hover-bg-color: rgba(255, 255, 255, 0.55);
+  --button-hover-bg-color: rgba(255, 111, 174, 0.14);
+
+  /* 自定义：粉色强调 */
+  --kiwi-pink: #ff6fae;
+  --kiwi-pink-soft: #ff9fc8;
+  --kiwi-pink-dim: rgba(255, 111, 174, 0.16);
+  --kiwi-glass: rgba(17, 10, 18, 0.82);
+  --kiwi-glass-strong: rgba(22, 13, 22, 0.84);
+  --kiwi-border: rgba(255, 143, 190, 0.2);
 }
 
 
 /* --------------------------------------------------------------------------
-   2. 全屏粉色山脉背景
+   2. 全屏背景：粉发天使 + 暗色蒙版
    用 fixed 定位的伪元素实现，比 background-attachment: fixed 更稳
    （iOS Safari 对后者支持很差）
+
+   关键几何：舞台必须严格等于图片宽高比 1972:1280 = 1.540625，
+   眨眼图层才能和背景像素对齐。所以宽高都用 max() 算出来，
+   不用 background-size: cover（cover 的裁切量无法在 CSS 里反推）
    -------------------------------------------------------------------------- */
 html {
-  background-color: #f7e7ee;
+  background-color: #0a0610;
 }
 
 body {
@@ -59,50 +71,135 @@ body {
   background-color: transparent !important;
 }
 
-body::before {
+body::before,
+.kiwi-stage {
   content: "";
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  left: 50%;
+  top: 50%;
+  /* 1.540625 * 100 = 154.0625 —— 保证舞台始终铺满视口 */
+  width: max(100vw, 154.0625vh);
+  height: calc(max(100vw, 154.0625vh) / 1.540625);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+body::before {
+  z-index: -3;
+  background: url("/img/bg-angel.jpg") center center / 100% 100% no-repeat;
+}
+
+/* 环境光：压在眼睛图层「下面」，只负责氛围 */
+.kiwi-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(58% 42% at 68% 28%,
+              rgba(255, 110, 175, 0.20), transparent 72%);
+  animation: kiwi-ambient 9s ease-in-out infinite;
+}
+
+/* 深色蒙版必须压在「眼睛图层」上面，
+   否则眼贴片比背景亮一圈，会像个发光的椭圆贴纸。
+   放在这里之后，贴片和背景经受同一层蒙版，肉眼完全看不接缝 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: url("/img/bg.jpg") center center / cover no-repeat;
+  background: linear-gradient(180deg,
+    rgba(10, 5, 14, 0.5) 0%,
+    rgba(10, 5, 14, 0.44) 38%,
+    rgba(10, 5, 14, 0.66) 72%,
+    rgba(8, 4, 11, 0.9) 100%);
 }
 
-/* 头图不再自带图片：让它完全透明，直接透出上面那张全局背景
-   这样头图和页面主体是同一张图，滚动时严丝合缝，不会出现断层 */
-#banner {
-  background: none !important;
+@keyframes kiwi-ambient {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
 }
 
-/* 去掉头图上的黑色蒙版，让粉色天空直接露出来 */
-#banner .mask {
-  background-color: transparent !important;
-}
-
-/* 头图文字：深紫红 + 柔和白色光晕
-   实测白字在粉色天空上对比度仅 1.5，深紫红可达 6.9，可读性优先 */
-.banner-text,
-#subtitle,
-.typed-cursor {
-  color: #5d3346;
-  text-shadow: 0 2px 14px rgba(255, 255, 255, 0.7),
-               0 1px 2px rgba(255, 255, 255, 0.55);
+/* 视口比原图更「瘦」时（竖屏手机、竖放的显示器），舞台按高度撑满，
+   左右会被裁掉；默认居中裁会把人物的脸裁到画面外。
+   这里把舞台往右推，让 68% 处那张脸留在可视范围内。
+   背景层和眼睛层用同一个 transform，所以眼睛依然严丝合缝 */
+@media (max-aspect-ratio: 1972/1280) {
+  body::before,
+  .kiwi-stage {
+    transform: translate(-66%, -50%);
+  }
 }
 
 
 /* --------------------------------------------------------------------------
-   3. 毛玻璃卡片（主内容面板）
+   2b. 眨眼
+   .kiwi-stage 由 js/bg-eyes.js 注入，几何与 body::before 完全一致。
+   每只眼两层：底层是「闭眼纹理」lid-x.png，上层是原图真实眼睛 eye-x.png。
+   眨眼时上层压扁并淡出，露出底层 —— 闭眼的样子，再弹回原样。
+   -------------------------------------------------------------------------- */
+.kiwi-stage {
+  z-index: -1;
+}
+
+.kiwi-eye {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  will-change: transform, opacity;
+}
+
+/* 位置由原图像素换算而来，单位是舞台的百分比 */
+.kiwi-e1 { left: 64.2495%; top: 26.7188%; width: 7.5051%; height: 6.8750%; }
+.kiwi-e2 { left: 70.1826%; top: 33.2812%; width: 4.6653%; height: 5.9375%; }
+
+.kiwi-lid.kiwi-e1 { background-image: url("/img/lid-l.png"); }
+.kiwi-lid.kiwi-e2 { background-image: url("/img/lid-r.png"); }
+.kiwi-orb.kiwi-e1 { background-image: url("/img/eye-l.png"); }
+.kiwi-orb.kiwi-e2 { background-image: url("/img/eye-r.png"); }
+
+/* 上层眼睛：平时完全盖住下层，眨眼时才让位 */
+.kiwi-orb {
+  transform-origin: 50% 100%;
+  animation: kiwi-blink 6.8s ease-in-out infinite;
+}
+
+/* 两只眼错开 90ms，避免像机器一样同步 */
+.kiwi-orb.kiwi-e2 {
+  animation-duration: 6.8s;
+  animation-delay: 0.09s;
+}
+
+@keyframes kiwi-blink {
+  0%, 91%    { transform: scaleY(1);    opacity: 1; }
+  94%        { transform: scaleY(0.05); opacity: 0; }
+  95.6%      { transform: scaleY(0.05); opacity: 0; }
+  98.2%      { transform: scaleY(1);    opacity: 1; }
+  100%       { transform: scaleY(1);    opacity: 1; }
+}
+
+/* 尊重系统的「减弱动态效果」设置 */
+@media (prefers-reduced-motion: reduce) {
+  .kiwi-orb,
+  body::after {
+    animation: none !important;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   3. 黑玻璃卡片（主内容面板）
    -------------------------------------------------------------------------- */
 #board {
   background-color: var(--board-bg-color) !important;
-  -webkit-backdrop-filter: saturate(160%) blur(16px);
-  backdrop-filter: saturate(160%) blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: saturate(140%) blur(22px);
+  backdrop-filter: saturate(140%) blur(22px);
+  border: 1px solid var(--kiwi-border);
   border-radius: 1rem;
-  box-shadow: 0 10px 40px rgba(150, 80, 115, 0.16);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55),
+              inset 0 1px 0 rgba(255, 175, 210, 0.06);
 }
 
 /* 窄屏时卡片贴边，收一点内边距 */
@@ -114,7 +211,7 @@ body::before {
 
 
 /* --------------------------------------------------------------------------
-   4. 毛玻璃导航栏
+   4. 黑玻璃导航栏
    只在页面向下滚动后才出现底色，顶部时是透明的
    -------------------------------------------------------------------------- */
 .navbar-col-show,
@@ -122,12 +219,12 @@ body::before {
 .navbar .dropdown-collapse,
 #mobile-grid-menu {
   background-color: var(--navbar-bg-color) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(18px);
-  backdrop-filter: saturate(180%) blur(18px);
-  box-shadow: 0 2px 18px rgba(160, 90, 125, 0.14);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  backdrop-filter: saturate(160%) blur(18px);
+  box-shadow: 0 2px 22px rgba(0, 0, 0, 0.5);
 }
 
-/* 导航栏文字：默认是白色（bootstrap 的 navbar-dark），改成玫褐色 */
+/* 导航栏文字 */
 #navbar .navbar-brand,
 #navbar .nav-link,
 #navbar .navbar-brand strong {
@@ -136,7 +233,7 @@ body::before {
 
 #navbar .nav-link:hover,
 #navbar .navbar-brand:hover {
-  color: #c25b85 !important;
+  color: var(--kiwi-pink) !important;
   opacity: 1;
 }
 
@@ -149,15 +246,24 @@ body::before {
 
 
 /* --------------------------------------------------------------------------
-   5. 文章目录（TOC）毛玻璃
+   5. 文章目录（TOC）黑玻璃
    -------------------------------------------------------------------------- */
 #toc {
-  background-color: rgba(255, 253, 254, 0.42) !important;
-  -webkit-backdrop-filter: saturate(160%) blur(14px);
-  backdrop-filter: saturate(160%) blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(20, 12, 20, 0.72) !important;
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  backdrop-filter: saturate(140%) blur(14px);
+  border: 1px solid var(--kiwi-border);
   border-radius: 1rem;
-  box-shadow: 0 6px 24px rgba(150, 80, 115, 0.12);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+#toc a {
+  color: var(--sec-text-color);
+}
+
+#toc a:hover,
+#toc .active > a {
+  color: var(--kiwi-pink) !important;
 }
 
 
@@ -165,16 +271,21 @@ body::before {
    6. 搜索弹窗
    -------------------------------------------------------------------------- */
 #modalSearch .modal-content {
-  background-color: rgba(255, 253, 254, 0.75) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(22px);
-  backdrop-filter: saturate(180%) blur(22px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background-color: rgba(18, 11, 19, 0.94) !important;
+  -webkit-backdrop-filter: saturate(150%) blur(22px);
+  backdrop-filter: saturate(150%) blur(22px);
+  border: 1px solid var(--kiwi-border);
   border-radius: 1rem;
+  color: var(--text-color);
 }
 
 #modalSearch .modal-header,
 #modalSearch .modal-footer {
-  border-color: rgba(196, 140, 165, 0.3) !important;
+  border-color: var(--line-color) !important;
+}
+
+#modalSearch input {
+  color: var(--text-color);
 }
 
 
@@ -182,35 +293,38 @@ body::before {
    7. 回到顶部按钮
    -------------------------------------------------------------------------- */
 #scroll-top-button {
-  background-color: rgba(255, 253, 254, 0.5) !important;
-  -webkit-backdrop-filter: saturate(160%) blur(12px);
-  backdrop-filter: saturate(160%) blur(12px);
+  background-color: rgba(20, 12, 20, 0.7) !important;
+  -webkit-backdrop-filter: saturate(150%) blur(12px);
+  backdrop-filter: saturate(150%) blur(12px);
   border-radius: 50%;
-  box-shadow: 0 4px 16px rgba(160, 90, 125, 0.22);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+}
+
+#scroll-top-button i {
+  color: var(--kiwi-pink);
 }
 
 
 /* --------------------------------------------------------------------------
-   8. 页脚
-   背景图是 fixed 的，滚动位置不同、页脚背后的颜色也不同（顶部浅粉、底部深紫红），
-   所以给页脚铺一条毛玻璃底衬，保证任何滚动位置下文字都清楚
+   8. 头图
+   头图不再自带图片：让它完全透明，直接透出上面那张全局背景
+   这样头图和页面主体是同一张图，滚动时严丝合缝，不会出现断层
    -------------------------------------------------------------------------- */
-.footer-inner {
-  margin-top: 2.5rem;
-  padding: 2rem 1rem 1.2rem;
-  background-color: rgba(255, 253, 254, 0.42);
-  -webkit-backdrop-filter: saturate(160%) blur(14px);
-  backdrop-filter: saturate(160%) blur(14px);
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
-  color: #6b4356;
+#banner {
+  background: none !important;
 }
 
-.footer-inner a {
-  color: #b0507a !important;
+#banner .mask {
+  background-color: transparent !important;
 }
 
-.footer-inner a:hover {
-  color: #d1699a !important;
+/* 头图文字：浅粉 + 黑色投影，保证在插画上也读得清 */
+.banner-text,
+#subtitle,
+.typed-cursor {
+  color: var(--subtitle-color);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8),
+               0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 
@@ -218,41 +332,143 @@ body::before {
    9. 正文细节：引用块、表格、图片、代码块
    -------------------------------------------------------------------------- */
 .markdown-body blockquote {
-  color: #6b4c59;
-  background-color: rgba(255, 255, 255, 0.38);
-  border-left-color: #eab7cb;
+  color: #d9c4d4;
+  background-color: rgba(255, 111, 174, 0.1);
+  border-left-color: var(--kiwi-pink);
   border-radius: 0 0.6rem 0.6rem 0;
 }
 
 .markdown-body table tr {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: transparent;
 }
 
 .markdown-body table tr:nth-child(2n) {
-  background-color: rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 .markdown-body table th {
-  background-color: rgba(246, 200, 218, 0.5);
+  background-color: rgba(255, 111, 174, 0.14);
+  color: #ffd0e4;
+}
+
+.markdown-body table td,
+.markdown-body table th {
+  border-color: var(--line-color);
 }
 
 .markdown-body img {
   border-radius: 0.6rem;
-  box-shadow: 0 6px 22px rgba(150, 80, 115, 0.16);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55);
+}
+
+.markdown-body a {
+  color: var(--post-link-color);
+}
+
+.markdown-body a:hover {
+  color: var(--link-hover-color);
+}
+
+.markdown-body hr {
+  background-color: var(--line-color);
 }
 
 .markdown-body pre,
 .markdown-body .highlight {
   border-radius: 0.6rem;
+  background-color: #150e18 !important;
+  border: 1px solid rgba(255, 143, 190, 0.12);
 }
 
 .markdown-body code {
   border-radius: 0.3rem;
+  background-color: rgba(255, 111, 174, 0.18);
+  color: #ffbcd9;
+}
+
+.markdown-body pre code,
+.markdown-body .highlight code {
+  background-color: transparent;
+  color: #e6d9e2;
+}
+
+/* highlight.js 的浅色主题在深底上读不清，这里整套换掉 */
+.hljs {
+  color: #e6d9e2;
+  background: transparent;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-tag {
+  color: #ff7fb8;
+}
+
+.hljs-string,
+.hljs-attr,
+.hljs-attribute,
+.hljs-template-tag {
+  color: #ffc48c;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-symbol {
+  color: #c39bff;
+}
+
+.hljs-title,
+.hljs-name,
+.hljs-section {
+  color: #8fd0ff;
+}
+
+.hljs-built_in,
+.hljs-type {
+  color: #7ee0c0;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #7d6b78;
+  font-style: italic;
+}
+
+.hljs-variable,
+.hljs-params,
+.hljs-property {
+  color: #e6d9e2;
+}
+
+.hljs-meta,
+.hljs-doctag {
+  color: #b09dab;
+}
+
+/* 代码块的行号 / 复制按钮 / 语言标签 */
+.markdown-body .highlight .gutter,
+.markdown-body .highlight .line-number {
+  color: #5f4c5a !important;
+  background-color: rgba(0, 0, 0, 0.25) !important;
+  border-right: 1px solid rgba(255, 143, 190, 0.08);
+}
+
+.markdown-body .code-wrapper .code-copy,
+.markdown-body .code-wrapper .code-lang {
+  color: #b09dab !important;
+  background-color: rgba(255, 111, 174, 0.1) !important;
+  border: 1px solid rgba(255, 143, 190, 0.14) !important;
 }
 
 /* 文章底部的「上一篇 / 下一篇」 */
 .post-prevnext a {
   border-radius: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--kiwi-border);
+}
+
+.post-prevnext a:hover .post-prevnext-title {
+  color: var(--kiwi-pink);
 }
 
 
@@ -265,22 +481,28 @@ body::before {
   border-radius: 0.5rem;
 }
 
+.pagination .current {
+  background-color: var(--kiwi-pink) !important;
+  color: #1a0f1a !important;
+  border-color: var(--kiwi-pink) !important;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #e6aec4;
+  background-color: var(--scrollbar-color);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #d189a5;
+  background-color: var(--scrollbar-hover-color);
 }
 
 
@@ -288,7 +510,7 @@ body::before {
    11. 首页头图：圆形头像 + 副标题动画
    -------------------------------------------------------------------------- */
 
-/* 头像：悬浮呼吸 + 光晕，hover 时放大并抬起来 */
+/* 头像：悬浮呼吸 + 粉色光晕，hover 时放大并抬起来 */
 .banner-avatar {
   display: inline-block;
   width: 128px;
@@ -296,11 +518,10 @@ body::before {
   margin-bottom: 1.2rem;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid rgba(255, 255, 255, 0.78);
-  box-shadow: 0 10px 30px rgba(120, 60, 90, 0.28),
-              0 0 0 6px rgba(255, 255, 255, 0.22);
-  /* 只让位移动起来：入场淡入交给父级 .banner-text 的 fade-in-up，
-     避免两条动画抢同一个 transform 属性 */
+  border: 3px solid rgba(255, 143, 190, 0.55);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.6),
+              0 0 0 6px rgba(255, 111, 174, 0.14),
+              0 0 40px rgba(255, 111, 174, 0.28);
   animation: avatar-float 4s ease-in-out infinite;
   transition: box-shadow 0.35s ease;
   will-change: transform;
@@ -315,45 +536,36 @@ body::before {
 }
 
 .banner-avatar:hover {
-  box-shadow: 0 16px 40px rgba(120, 60, 90, 0.38),
-              0 0 0 6px rgba(255, 255, 255, 0.34);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.7),
+              0 0 0 6px rgba(255, 111, 174, 0.24),
+              0 0 56px rgba(255, 111, 174, 0.5);
 }
 
-/* 放大写在 img 上，这样不会和 .banner-avatar 的浮动动画冲突 */
 .banner-avatar:hover img {
   transform: scale(1.07);
 }
 
 @keyframes avatar-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-9px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-9px); }
 }
 
-/* 副标题：打字机之外再叠一层柔和的光晕呼吸 */
+/* 副标题：打字机之外再叠一层粉色光晕呼吸 */
 #subtitle {
   color: var(--subtitle-color);
   animation: subtitle-glow 3.4s ease-in-out infinite;
 }
 
 @keyframes subtitle-glow {
-  0%,
-  100% {
-    text-shadow: 0 2px 12px rgba(255, 255, 255, 0.55);
+  0%, 100% {
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
   }
-
   50% {
-    text-shadow: 0 2px 22px rgba(255, 255, 255, 0.95),
-                 0 0 26px rgba(226, 105, 155, 0.35);
+    text-shadow: 0 2px 22px rgba(0, 0, 0, 0.9),
+                 0 0 26px rgba(255, 111, 174, 0.55);
   }
 }
 
-/* 尊重系统的「减弱动态效果」设置 */
 @media (prefers-reduced-motion: reduce) {
   .banner-avatar,
   #subtitle {
@@ -361,7 +573,6 @@ body::before {
   }
 }
 
-/* 移动端头像小一点，避免挤掉标题 */
 @media (max-width: 767px) {
   .banner-avatar {
     width: 96px;
@@ -372,12 +583,12 @@ body::before {
 
 
 /* --------------------------------------------------------------------------
-   12. 首页文章列表：每篇一块独立毛玻璃 + 封面图
+   12. 首页文章列表：每篇一块独立黑玻璃 + 封面图
    样式只作用于首页（body.page-home），文章页、归档页不受影响
    -------------------------------------------------------------------------- */
 
 /* 首页的那整块面板改为全透明，把「玻璃」让给每一篇文章。
-   否则两层半透明叠加会发灰发浑，背景的粉色山脉也被糊住看不出来 */
+   否则两层半透明叠加会发灰发浑，背景的插画也被糊住看不出来 */
 .page-home #board {
   background-color: transparent !important;
   -webkit-backdrop-filter: none;
@@ -386,60 +597,57 @@ body::before {
   box-shadow: none;
 }
 
-/* 每篇文章 = 一块独立毛玻璃分块 */
+/* 每篇文章 = 一块独立黑玻璃分块 */
 .page-home .index-card {
-  /* 抵消 bootstrap row 的负边距，让玻璃块与内容区对齐、不溢出 */
   margin-left: 0 !important;
   margin-right: 0 !important;
   margin-bottom: 1.6rem;
   padding: 1rem 0.25rem 0.75rem;
-  background-color: rgba(255, 253, 254, 0.5);
-  -webkit-backdrop-filter: saturate(165%) blur(16px);
-  backdrop-filter: saturate(165%) blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background-color: var(--kiwi-glass);
+  -webkit-backdrop-filter: saturate(140%) blur(22px);
+  backdrop-filter: saturate(140%) blur(22px);
+  border: 1px solid var(--kiwi-border);
   border-radius: 1.1rem;
-  box-shadow: 0 10px 32px rgba(150, 80, 115, 0.15);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
   transition: transform 0.32s ease, box-shadow 0.32s ease,
               background-color 0.32s ease, border-color 0.32s ease;
 }
 
-/* 悬停：整块轻轻浮起，玻璃更透亮 */
+/* 悬停：整块轻轻浮起，玻璃更亮一点 */
 .page-home .index-card:hover {
   transform: translateY(-4px);
-  background-color: rgba(255, 255, 255, 0.64);
-  border-color: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 20px 44px rgba(150, 80, 115, 0.26);
+  background-color: rgba(26, 16, 26, 0.76);
+  border-color: rgba(255, 143, 190, 0.36);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6),
+              0 0 40px rgba(255, 111, 174, 0.14);
 }
 
-/* 封面图：圆角 + 悬停微放大。
-   不设 overflow: hidden，让图片的外阴影能透出来；
-   列的 15px 内边距足够接住放大的那一点溢出，不会压到文字 */
 .page-home .index-img img {
   border-radius: 0.85rem;
-  box-shadow: 0 8px 22px rgba(150, 80, 115, 0.22);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
   transition: transform 0.45s ease, box-shadow 0.45s ease;
 }
 
 .page-home .index-card:hover .index-img img {
   transform: scale(1.04);
-  box-shadow: 0 14px 32px rgba(150, 80, 115, 0.3);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.6);
 }
 
-/* 标题在悬停时染成玫粉色，强化「可点」的暗示 */
+/* 标题在悬停时染成粉色，强化「可点」的暗示 */
 .page-home .index-card:hover .index-header a {
-  color: var(--post-link-color);
+  color: var(--kiwi-pink);
 }
 
 /* 首页面板透明后，分页器直接浮在背景上，给它一层轻玻璃保证可读 */
 .page-home .pagination .page-number,
 .page-home .pagination .extend {
-  background-color: rgba(255, 255, 255, 0.5);
-  -webkit-backdrop-filter: saturate(160%) blur(10px);
-  backdrop-filter: saturate(160%) blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(20, 12, 20, 0.7);
+  -webkit-backdrop-filter: saturate(140%) blur(10px);
+  backdrop-filter: saturate(140%) blur(10px);
+  border: 1px solid var(--kiwi-border);
+  color: var(--text-color);
 }
 
-/* 移动端：留白收紧，玻璃块圆角略小 */
 @media (max-width: 767px) {
   .page-home .index-card {
     padding: 0.85rem 0.15rem 0.6rem;
@@ -448,7 +656,6 @@ body::before {
   }
 }
 
-/* 尊重系统的「减弱动态效果」设置 */
 @media (prefers-reduced-motion: reduce) {
   .page-home .index-card,
   .page-home .index-img img {
@@ -477,7 +684,6 @@ body::before {
   margin-top: 1.75rem;
 }
 
-/* 毛玻璃胶囊按钮：与站点的玻璃质感统一 */
 .banner-btn {
   display: inline-flex;
   align-items: center;
@@ -486,14 +692,14 @@ body::before {
   font-size: 0.95rem;
   font-weight: 500;
   line-height: 1.2;
-  color: #5d3346 !important;
+  color: #ffd9ea !important;
   text-decoration: none !important;
-  background-color: rgba(255, 253, 254, 0.52);
-  -webkit-backdrop-filter: saturate(170%) blur(14px);
-  backdrop-filter: saturate(170%) blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  background-color: rgba(20, 12, 20, 0.55);
+  -webkit-backdrop-filter: saturate(150%) blur(14px);
+  backdrop-filter: saturate(150%) blur(14px);
+  border: 1px solid rgba(255, 143, 190, 0.34);
   border-radius: 2rem;
-  box-shadow: 0 6px 20px rgba(150, 80, 115, 0.16);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   transition: transform 0.28s ease, background-color 0.28s ease,
               border-color 0.28s ease, box-shadow 0.28s ease, color 0.28s ease;
 }
@@ -503,13 +709,13 @@ body::before {
   flex: none;
 }
 
-/* 悬停：胶囊填成玫粉色、文字转白，作为明确的点击提示 */
+/* 悬停：胶囊填成粉色、文字转深色，作为明确的点击提示 */
 .banner-btn:hover {
   transform: translateY(-3px);
-  color: #ffffff !important;
-  background-color: #c25b85;
-  border-color: #c25b85;
-  box-shadow: 0 12px 28px rgba(194, 91, 133, 0.42);
+  color: #1a0f1a !important;
+  background-color: var(--kiwi-pink);
+  border-color: var(--kiwi-pink);
+  box-shadow: 0 12px 30px rgba(255, 111, 174, 0.45);
 }
 
 @media (max-width: 767px) {
@@ -537,13 +743,11 @@ body::before {
 /* --------------------------------------------------------------------------
    14. 「我的仓库」页面（/repos/）
    卡片由 tools/gen-repos.mjs 生成，构建前跑一次即可
-   注意：站内暗色模式是关掉的（dark_mode.enable: false），所以只写浅色一套
    -------------------------------------------------------------------------- */
 .repo-wrap {
   margin: 0;
 }
 
-/* 顶部统计行 */
 .repo-summary {
   margin: 0 0 1.35rem;
   font-size: 0.95rem;
@@ -552,7 +756,7 @@ body::before {
 }
 
 .repo-summary b {
-  color: var(--post-link-color);
+  color: var(--kiwi-pink-soft);
 }
 
 .repo-summary a {
@@ -567,9 +771,7 @@ body::before {
   gap: 1.1rem;
 }
 
-/* 单张卡片：毛玻璃 + 悬停浮起。
-   这里比首页卡片实一点（0.6），因为外层 #board 本身已经是一层玻璃，
-   两层都太透会发灰、字也糊 */
+/* 单张卡片：黑玻璃 + 悬停浮起 */
 .repo-card {
   display: flex;
   flex-direction: column;
@@ -577,24 +779,23 @@ body::before {
   padding: 1.1rem 1.2rem;
   color: var(--post-text-color) !important;
   text-decoration: none !important;
-  background-color: rgba(255, 255, 255, 0.6);
-  -webkit-backdrop-filter: saturate(160%) blur(12px);
-  backdrop-filter: saturate(160%) blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  background-color: rgba(255, 255, 255, 0.035);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+  backdrop-filter: saturate(140%) blur(12px);
+  border: 1px solid var(--kiwi-border);
   border-radius: 1.1rem;
-  box-shadow: 0 10px 28px rgba(150, 80, 115, 0.13);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
   transition: transform 0.3s ease, box-shadow 0.3s ease,
               background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .repo-card:hover {
   transform: translateY(-4px);
-  background-color: rgba(255, 255, 255, 0.78);
-  border-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 20px 42px rgba(150, 80, 115, 0.24);
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 143, 190, 0.36);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.55);
 }
 
-/* 仓库名 + 角标 */
 .repo-head {
   display: flex;
   align-items: center;
@@ -612,7 +813,7 @@ body::before {
 }
 
 .repo-card:hover .repo-name {
-  color: var(--post-link-color);
+  color: var(--kiwi-pink);
 }
 
 .repo-badge {
@@ -621,18 +822,17 @@ body::before {
   font-size: 0.7rem;
   line-height: 1.6;
   color: var(--sec-text-color);
-  background-color: rgba(194, 91, 133, 0.1);
-  border: 1px solid rgba(194, 91, 133, 0.22);
+  background-color: var(--kiwi-pink-dim);
+  border: 1px solid rgba(255, 111, 174, 0.26);
   border-radius: 1rem;
 }
 
 .repo-badge-self {
-  color: #ffffff;
-  background-color: #c25b85;
-  border-color: #c25b85;
+  color: #1a0f1a;
+  background-color: var(--kiwi-pink);
+  border-color: var(--kiwi-pink);
 }
 
-/* 描述占满剩余高度，让底部信息栏对齐 */
 .repo-desc {
   flex: 1;
   font-size: 0.88rem;
@@ -644,7 +844,6 @@ body::before {
   opacity: 0.6;
 }
 
-/* 底部：语言 / Star / Fork / 更新时间 */
 .repo-foot {
   display: flex;
   align-items: center;
@@ -677,7 +876,6 @@ body::before {
   margin-left: auto;
 }
 
-/* 话题标签 */
 .repo-topics {
   display: flex;
   flex-wrap: wrap;
@@ -688,8 +886,8 @@ body::before {
   padding: 0.05rem 0.5rem;
   font-size: 0.7rem;
   line-height: 1.7;
-  color: var(--post-link-color);
-  background-color: rgba(194, 91, 133, 0.08);
+  color: var(--kiwi-pink-soft);
+  background-color: rgba(255, 111, 174, 0.1);
   border-radius: 1rem;
 }
 
@@ -703,7 +901,6 @@ body::before {
     padding: 0.95rem 1rem;
   }
 
-  /* 窄屏放不下就把「更新于」换行，别把前面几项挤变形 */
   .repo-updated {
     margin-left: 0;
   }
@@ -718,4 +915,75 @@ body::before {
   .repo-card:hover {
     transform: none;
   }
+}
+
+
+/* --------------------------------------------------------------------------
+   15. 页脚 + 各类零碎文字
+   -------------------------------------------------------------------------- */
+.footer-inner {
+  margin-top: 2.5rem;
+  padding: 2rem 1rem 1.2rem;
+  background-color: rgba(12, 7, 14, 0.55);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  backdrop-filter: saturate(140%) blur(14px);
+  border-top: 1px solid var(--kiwi-border);
+  color: var(--sec-text-color);
+}
+
+.footer-inner a {
+  color: var(--kiwi-pink-soft) !important;
+}
+
+.footer-inner a:hover {
+  color: var(--kiwi-pink) !important;
+}
+
+/* 首页文章卡片的摘要、日期、分类等次级文字 */
+.index-excerpt,
+.index-meta,
+.index-header .post-meta,
+.post-meta,
+.post-meta a {
+  color: var(--sec-text-color) !important;
+}
+
+.index-header a,
+.post-title {
+  color: var(--post-heading-color);
+}
+
+.index-header a:hover {
+  color: var(--kiwi-pink);
+}
+
+/* 归档 / 标签 / 分类页的年份与条目 */
+.archive .archive-year,
+.category-post-item a,
+.tag-post-item a {
+  color: var(--text-color);
+}
+
+.archive .archive-year {
+  color: var(--kiwi-pink-soft);
+}
+
+/* 标签胶囊 */
+.post-tags .tag,
+.tagcloud a {
+  background-color: var(--kiwi-pink-dim);
+  border: 1px solid rgba(255, 111, 174, 0.24);
+  color: var(--kiwi-pink-soft) !important;
+  border-radius: 1rem;
+}
+
+.post-tags .tag:hover,
+.tagcloud a:hover {
+  background-color: var(--kiwi-pink);
+  color: #1a0f1a !important;
+}
+
+/* 页面底部的「加载更多」/ 博客信息 */
+.blog-info a {
+  color: var(--kiwi-pink-soft);
 }
